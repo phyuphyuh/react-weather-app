@@ -7,38 +7,17 @@ const Weather = () => {
   const [date, setDate] = useState('');
   const [lat, setLat] = useState(null);
   const [lon, setLon] = useState(null);
-  const [locationWeather, setLocationWeather] = useState(null);
 
   const apiKey = import.meta.env.VITE_WEATHER_API_KEY;
 
   useEffect(() => {
-    const fetchWeatherByCity = async () => {
-      if (city) {
-        try {
-          const response = await axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`);
-          setWeather(response.data);
-        } catch (error) {
-          console.error(error);
-          setWeather(null);
-        }
-      }
-    };
-    fetchWeatherByCity();
-  }, [city]);
+    fetchWeather();
+  }, []);
 
   useEffect(() => {
-    const fetchWeatherByLocation = async () => {
-      if (lat && lon) {
-        try {
-          const response = await axios.get(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`);
-          setLocationWeather(response.data);
-        } catch (error) {
-          console.error(error);
-          setLocationWeather(null);
-        }
-      }
-    };
-    fetchWeatherByLocation();
+    if (lat && lon) {
+      fetchWeather();
+    }
   }, [lat, lon]);
 
   useEffect(() => {
@@ -60,21 +39,57 @@ const Weather = () => {
 
   const handleCityChange = (event) => {
     setCity(event.target.value);
+    setLat(null);
+    setLon(null);
   };
 
   const handleGetLocation = () => {
-    navigator.geolocation.getCurrentPosition((position) => {
-      setLat(position.coords.latitude);
-      setLon(position.coords.longitude);
-    });
+    setCity('');
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setLat(position.coords.latitude);
+        setLon(position.coords.longitude);
+      },
+      (error) => {
+        console.error('Error getting location:', error);
+      }
+    );
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    fetchWeather();
+  };
+
+  const fetchWeather = async () => {
+    if (city) {
+      try {
+        const response = await axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`);
+        setWeather(response.data);
+      } catch (error) {
+        console.error(error);
+        setWeather(null);
+      }
+    } else if (lat && lon) {
+      try {
+        const response = await axios.get(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`);
+        setWeather(response.data);
+      } catch (error) {
+        console.error(error);
+        setWeather(null);
+      }
+    }
   };
 
   return (
     <div>
-      <h1>Weather App</h1>
-      <input type="text" value={city} onChange={handleCityChange} placeholder='Enter city name' />
+      <h1 className="text-3xl font-bold underline">Weather App</h1>
+      <form onSubmit={handleSubmit}>
+        <input type="text" value={city} onChange={handleCityChange} placeholder='Enter city name' />
+        <button type='submit'>Get Weather</button>
+      </form>
       <button onClick={handleGetLocation}>Current Location</button>
-      {weather && (
+      {weather ? (
         <div>
           <h2>Weather in {weather.name}</h2>
           <p>{date}</p>
@@ -83,16 +98,10 @@ const Weather = () => {
           <p>Humidity: {weather.main.humidity}%</p>
           <p>Wind Speed: {weather.wind.speed} m/s</p>
         </div>
-      )}
-      {locationWeather && (
-        <div>
-          <h2>Weather in your current location</h2>
-          <p>{date}</p>
-          <p>{locationWeather.weather[0].description}</p>
-          <p>Temperature: {locationWeather.main.temp}°C</p>
-          <p>Humidity: {locationWeather.main.humidity}%</p>
-          <p>Wind Speed: {locationWeather.wind.speed} m/s</p>
-        </div>
+      ) : lat || lon || city ? (
+        <p>Loading...</p>
+      ) : (
+        <p>Enter a city or use your current location to get the weather.</p>
       )}
     </div>
   );
