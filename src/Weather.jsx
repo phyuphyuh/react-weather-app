@@ -5,7 +5,7 @@ const Weather = () => {
   const [city, setCity] = useState('Bangkok');
   const [weather, setWeather] = useState(null);
 
-  const apiKey = '4d7b0b7a76ffea2f941dcceb59640510';
+  const apiKey = import.meta.env.VITE_WEATHER_API_KEY;
 
   useEffect(() => {
     const fetchWeather = async () => {
