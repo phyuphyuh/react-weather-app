@@ -4,6 +4,7 @@ import axios from 'axios';
 const Weather = () => {
   const [city, setCity] = useState('Bangkok');
   const [weather, setWeather] = useState(null);
+  const [date, setDate] = useState('');
 
   const apiKey = import.meta.env.VITE_WEATHER_API_KEY;
 
@@ -20,6 +21,24 @@ const Weather = () => {
     fetchWeather();
   }, [city]);
 
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      const currentDate = new Date();
+      const formattedDate = currentDate.toLocaleString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        hour12: true
+      });
+      setDate(formattedDate);
+    }, 60000);
+
+    return () => clearInterval(intervalId);
+  }, []);
+
   const handleCityChange = (event) => {
     setCity(event.target.value);
   };
@@ -31,6 +50,7 @@ const Weather = () => {
       {weather && (
         <div>
           <h2>Weather in {weather.name}</h2>
+          <p>{date}</p>
           <p>{weather.weather[0].description}</p>
           <p>Temperature: {weather.main.temp}°C</p>
           <p>Humidity: {weather.main.humidity}%</p>
