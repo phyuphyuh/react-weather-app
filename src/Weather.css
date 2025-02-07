@@ -1,0 +1,16 @@
+.weather-container {
+  background-size: cover;
+  background-position: center;
+}
+
+.weather-container.daytime {
+  background-image: url('./assets/day.jpg');
+}
+
+.weather-container.evening {
+  background-image: url('./assets/evening.jpg');
+}
+
+.weather-container.night {
+  background-image: url('./assets/night.jpg');
+}

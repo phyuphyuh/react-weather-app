@@ -2,16 +2,16 @@ import React from "react";
 
 const weatherIcons = {
   "Clear": {
-    day: "wi-day-sunny",
+    day: "wi-day-sunny text-yellow-300",
     night: "wi-stars"
   },
   "Clouds": {
-    day: "wi-day-cloudy",
-    night: "wi-night-alt-cloudy"
+    day: "wi-day-cloudy text-neutral-300",
+    night: "wi-night-alt-cloudy text-slate-300"
   },
   "Thunderstorm": {
-    day: "wi-day-thunderstorm",
-    night: "wi-night-alt-thunderstorm"
+    day: "wi-day-thunderstorm text-zinc-400",
+    night: "wi-night-alt-thunderstorm text-gray-400"
   },
   "Drizzle": {
     day: "wi-day-sprinkle",
@@ -68,7 +68,7 @@ const WeatherIcon = ({ condition, iconCode }) => {
   const iconClass = weatherIcons[condition] ? weatherIcons[condition][isDay ? "day" : "night"] : "win-na";
 
   return (
-    <i className={`wi ${iconClass} text-6xl`}></i>
+    <i className={`wi ${iconClass} text-6xl font-light`}></i>
   );
 };
 

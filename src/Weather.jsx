@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import WeatherIcon from './WeatherIcon';
 import DateTime from './DateTime';
+import './Weather.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLocationArrow } from '@fortawesome/free-solid-svg-icons';
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
@@ -11,6 +12,7 @@ const Weather = () => {
   const [weather, setWeather] = useState(null);
   const [lat, setLat] = useState(null);
   const [lon, setLon] = useState(null);
+  const [timeOfDay, setTimeOfDay] = useState('');
 
   const apiKey = import.meta.env.VITE_WEATHER_API_KEY;
 
@@ -83,18 +85,18 @@ const Weather = () => {
   const iconCode = weather ? weather.weather[0].icon : '';
 
   return (
-    <div>
-      <h1 className="text-3xl mb-8">Weather App</h1>
+    <div className={`weather-container ${timeOfDay} h-dvh w-full absolute top-0`}>
+      {/* <h1 className="text-3xl">Weather App</h1> */}
       <form
           onSubmit={handleSubmit}
-          className='bg-white-100 p-1 rounded-full shadow-md mb-6 flex'
+          className='bg-white-100 p-1 rounded-full shadow-md my-8 mx-4 flex'
       >
         <input
             type="text"
             value={city}
             onChange={handleCityChange}
             placeholder='Enter city name'
-            className="p-2 w-64 flex-1 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-300"
+            className="p-2 w-64 flex-1 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-300 bg-white/50 backdrop-invert backdrop-opacity-10"
         />
         <button
             onClick={handleGetLocation}
@@ -111,12 +113,12 @@ const Weather = () => {
       </form>
 
       {weather ? (
-        <div>
+        <div className='m-8'>
           <h3 className='text-2xl font-medium'>{weather.name}</h3>
           <WeatherIcon condition={condition} iconCode={iconCode} />
           <h2 className='text-3xl font-semibold'>{weather.main.temp}°C</h2>
           <p>{weather.weather[0].description}</p>
-          <DateTime weather={weather} />
+          <DateTime weather={weather} setTimeOfDay={setTimeOfDay} />
           {/* <p>{weather.weather[0].main}</p> */}
           <div>
             <i className='wi wi-thermometer'></i>

@@ -4,7 +4,7 @@ import './App.css';
 
 function App() {
   return (
-    <div className='container max-w-xl mx-auto my-10 p-5 bg-white rounded-lg shadow-md'>
+    <div className='container max-w-xl h-dvh mx-auto bg-white shadow-md relative'>
       <Weather />
     </div>
   );

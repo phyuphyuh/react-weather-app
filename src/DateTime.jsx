@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const DateTime = ({ weather }) => {
+const DateTime = ({ weather, setTimeOfDay }) => {
   const [date, setDate] = useState('');
 
   useEffect(() => {
@@ -22,6 +22,18 @@ const DateTime = ({ weather }) => {
       });
 
       setDate(formattedDate);
+
+      const hour = localDate.getHours();
+      const isDaytime = hour >= 6 && hour < 15;
+      const isEvening = hour >= 15 && hour < 19;
+      const isNight = hour >= 19 || hour < 6;
+      if (isDaytime) {
+        setTimeOfDay('daytime');
+      } else if (isEvening) {
+        setTimeOfDay('evening');
+      } else if (isNight) {
+        setTimeOfDay('night');
+      }
     };
 
     updateTime();
@@ -29,7 +41,7 @@ const DateTime = ({ weather }) => {
     const intervalId = setInterval(updateTime, 1000);
 
     return () => clearInterval(intervalId);
-  }, [weather]);
+  }, [weather, setTimeOfDay]);
 
   return <p>{date}</p>;
 };
