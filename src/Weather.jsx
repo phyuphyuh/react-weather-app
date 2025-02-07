@@ -4,8 +4,9 @@ import WeatherIcon from './WeatherIcon';
 import DateTime from './DateTime';
 import './Weather.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faLocationArrow } from '@fortawesome/free-solid-svg-icons';
-import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
+import { faLocationArrow, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
+
+const CACHE_EXPIRATION = 30 * 60 * 1000;
 
 const Weather = () => {
   const [city, setCity] = useState('');
@@ -63,8 +64,19 @@ const Weather = () => {
   };
 
   const fetchWeatherByCity = async (cityName, unitSystem) => {
+    const cacheKey = `${cityName}-${unitSystem}`;
+    const cachedData = JSON.parse(localStorage.getItem(cacheKey));
+
+    if (cachedData && Date.now() - cachedData.timestamp < CACHE_EXPIRATION) {
+      console.log('Using cached city data:', cityName);
+      setWeather(cachedData.weather);
+      return;
+    }
+
     try {
+      console.log('Fetching new data for:', cityName);
       const response = await axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${apiKey}&units=${unitSystem}`);
+      localStorage.setItem(cacheKey, JSON.stringify({ timestamp: Date.now(), weather: response.data }));
       setWeather(response.data);
     } catch (error) {
       console.error(error);
@@ -73,8 +85,19 @@ const Weather = () => {
   };
 
   const fetchWeatherByLocation = async (latitude, longitude, unitSystem) => {
+    const cacheKey = `${latitude}-${longitude}-${unitSystem}`;
+    const cachedData = JSON.parse(localStorage.getItem(cacheKey));
+
+    if (cachedData && (Date.now() - cachedData.timestamp < CACHE_EXPIRATION)) {
+      console.log('Using cached location data:', latitude, longitude);
+      setWeather(cachedData.weather);
+      return;
+    }
+
     try {
+      console.log('Fetching new data for:', latitude, longitude);
       const response = await axios.get(`https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=${unitSystem}`);
+      localStorage.setItem(cacheKey, JSON.stringify({ timestamp: Date.now(), weather: response.data }));
       setWeather(response.data);
     } catch (error) {
       console.error(error);
@@ -83,11 +106,13 @@ const Weather = () => {
   };
 
   const handleUnitSystemChange = () => {
-    setUnitSystem(unitSystem === 'metric' ? 'imperial' : 'metric');
+    const newUnit = unitSystem === 'metric' ? 'imperial' : 'metric';
+    setUnitSystem(newUnit);
+
     if (city) {
-      fetchWeatherByCity(city, unitSystem === 'metric' ? 'imperial' : 'metric');
+      fetchWeatherByCity(city, newUnit);
     } else if (lat && lon) {
-      fetchWeatherByLocation(lat, lon, unitSystem === 'metric' ? 'imperial' : 'metric');
+      fetchWeatherByLocation(lat, lon, newUnit);
     }
   };
 
@@ -124,16 +149,17 @@ const Weather = () => {
         </button>
       </form>
 
-      <button onClick={handleUnitSystemChange} className='text-sm cursor-pointer'>
+      <button onClick={handleUnitSystemChange} className='text-sm text-white cursor-pointer'>
         {unitSystem === 'metric' ? 'Switch to Imperial' : 'Switch to Metric'}
       </button>
 
       {weather ? (
-        <div className='m-8'>
-          <h3 className='text-2xl font-medium'>{weather.name}</h3>
+        <div className='m-8 p-8 bg-white/10 backdrop-invert backdrop-opacity-5'>
+          <h3 className='text-3xl font-normal text-white mb-2'>{weather.name}</h3>
+          <h2 className='text-6xl font-light text-white'>{Math.round(weather.main.temp)}{temperatureUnit}</h2>
           <WeatherIcon condition={condition} iconCode={iconCode} />
-          <h2 className='text-3xl font-semibold'>{weather.main.temp}{temperatureUnit}</h2>
-          <p>{weather.weather[0].description}</p>
+          <p className='text-lg font-medium text-sky-100 opacity-60'>{weather.weather[0].description}</p>
+          <p className='text-lg font-medium text-sky-100'><span>H:{Math.round(weather.main.temp_max)}{temperatureUnit}</span><span className='ms-3'>L:{Math.round(weather.main.temp_min)}{temperatureUnit}</span></p>
           <DateTime weather={weather} setTimeOfDay={setTimeOfDay} />
           <div className='grid grid-cols-2 gap-4 mt-4'>
             <div>
