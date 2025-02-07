@@ -68,7 +68,7 @@ const WeatherIcon = ({ condition, iconCode }) => {
   const iconClass = weatherIcons[condition] ? weatherIcons[condition][isDay ? "day" : "night"] : "win-na";
 
   return (
-    <i className={`wi ${iconClass}`}></i>
+    <i className={`wi ${iconClass} text-6xl`}></i>
   );
 };
 
