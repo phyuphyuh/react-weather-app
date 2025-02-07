@@ -3,7 +3,7 @@ import React from "react";
 const weatherIcons = {
   "Clear": {
     day: "wi-day-sunny",
-    night: "wi-night-clear"
+    night: "wi-stars"
   },
   "Clouds": {
     day: "wi-day-cloudy",

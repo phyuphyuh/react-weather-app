@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import WeatherIcon from './WeatherIcon';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faLocationArrow } from '@fortawesome/free-solid-svg-icons';
 
 const Weather = () => {
   const [city, setCity] = useState('');
@@ -11,18 +13,18 @@ const Weather = () => {
 
   const apiKey = import.meta.env.VITE_WEATHER_API_KEY;
 
-  useEffect(() => {
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        setLat(position.coords.latitude);
-        setLon(position.coords.longitude);
-      },
-      (error) => {
-        console.error('Error getting location:', error);
-        setCity('Bangkok');
-      }
-    );
-  }, []);
+  // useEffect(() => {
+  //   navigator.geolocation.getCurrentPosition(
+  //     (position) => {
+  //       setLat(position.coords.latitude);
+  //       setLon(position.coords.longitude);
+  //     },
+  //     (error) => {
+  //       console.error('Error getting location:', error);
+  //       setCity('Bangkok');
+  //     }
+  //   );
+  // }, []);
 
   useEffect(() => {
     if (lat && lon) {
@@ -121,6 +123,7 @@ const Weather = () => {
           onClick={handleGetLocation}
           className='bg-blue-500 hover:bg-blue-600'
       >
+        <FontAwesomeIcon icon={faLocationArrow} />
       </button>
       {weather ? (
         <div>
@@ -130,8 +133,19 @@ const Weather = () => {
           <p>{weather.weather[0].main}</p>
           <p>{weather.weather[0].description}</p>
           <p>Temperature: {weather.main.temp}°C</p>
-          <p>Humidity: {weather.main.humidity}%</p>
-          <p>Wind Speed: {weather.wind.speed} m/s</p>
+          <div>
+            <i className='wi wi-thermometer'></i>
+            <p>Feels Like: {weather.main.feels_like}°C</p>
+          </div>
+          <div>
+            <i className='wi wi-humidity'></i>
+            <p>Humidity: {weather.main.humidity}%</p>
+          </div>
+          <div>
+            <i className='wi wi-strong-wind'></i>
+            <p>Wind Speed: {weather.wind.speed} m/s</p>
+          </div>
+
         </div>
       ) : lat || lon || city ? (
         <p>Loading...</p>
