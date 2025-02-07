@@ -11,12 +11,20 @@ const Weather = () => {
   const apiKey = import.meta.env.VITE_WEATHER_API_KEY;
 
   useEffect(() => {
-    fetchWeather();
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setLat(position.coords.latitude);
+        setLon(position.coords.longitude);
+      },
+      (error) => {
+        console.error('Error getting location:', error);
+      }
+    );
   }, []);
 
   useEffect(() => {
     if (lat && lon) {
-      fetchWeather();
+      fetchWeatherByLocation(lat, lon);
     }
   }, [lat, lon]);
 
@@ -58,32 +66,34 @@ const Weather = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    fetchWeather();
+    if (city) {
+      fetchWeatherByCity(city);
+    }
   };
 
-  const fetchWeather = async () => {
-    if (city) {
-      try {
-        const response = await axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`);
-        setWeather(response.data);
-      } catch (error) {
-        console.error(error);
-        setWeather(null);
-      }
-    } else if (lat && lon) {
-      try {
-        const response = await axios.get(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`);
-        setWeather(response.data);
-      } catch (error) {
-        console.error(error);
-        setWeather(null);
-      }
+  const fetchWeatherByCity = async (cityName) => {
+    try {
+      const response = await axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${apiKey}&units=metric`);
+      setWeather(response.data);
+    } catch (error) {
+      console.error(error);
+      setWeather(null);
+    }
+  };
+
+  const fetchWeatherByLocation = async (latitude, longitude) => {
+    try {
+      const response = await axios.get(`https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=metric`);
+      setWeather(response.data);
+    } catch (error) {
+      console.error(error);
+      setWeather(null);
     }
   };
 
   return (
     <div>
-      <h1 className="text-3xl font-bold underline">Weather App</h1>
+      <h1 className="text-3xl font-bold">Weather App</h1>
       <form onSubmit={handleSubmit}>
         <input type="text" value={city} onChange={handleCityChange} placeholder='Enter city name' />
         <button type='submit'>Get Weather</button>
