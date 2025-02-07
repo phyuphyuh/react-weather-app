@@ -13,6 +13,7 @@ const Weather = () => {
   const [lat, setLat] = useState(null);
   const [lon, setLon] = useState(null);
   const [timeOfDay, setTimeOfDay] = useState('');
+  const [unitSystem, setUnitSystem] = useState('metric');
 
   const apiKey = import.meta.env.VITE_WEATHER_API_KEY;
 
@@ -31,15 +32,9 @@ const Weather = () => {
 
   useEffect(() => {
     if (lat && lon) {
-      fetchWeatherByLocation(lat, lon);
+      fetchWeatherByLocation(lat, lon, unitSystem);
     }
-  }, [lat, lon]);
-
-  const handleCityChange = (event) => {
-    setCity(event.target.value);
-    setLat(null);
-    setLon(null);
-  };
+  }, [lat, lon, unitSystem]);
 
   const handleGetLocation = () => {
     setCity('');
@@ -54,16 +49,22 @@ const Weather = () => {
     );
   };
 
+  const handleCityChange = (event) => {
+    setCity(event.target.value);
+    setLat(null);
+    setLon(null);
+  };
+
   const handleSubmit = (event) => {
     event.preventDefault();
     if (city) {
-      fetchWeatherByCity(city);
+      fetchWeatherByCity(city, unitSystem);
     }
   };
 
-  const fetchWeatherByCity = async (cityName) => {
+  const fetchWeatherByCity = async (cityName, unitSystem) => {
     try {
-      const response = await axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${apiKey}&units=metric`);
+      const response = await axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${apiKey}&units=${unitSystem}`);
       setWeather(response.data);
     } catch (error) {
       console.error(error);
@@ -71,22 +72,33 @@ const Weather = () => {
     }
   };
 
-  const fetchWeatherByLocation = async (latitude, longitude) => {
+  const fetchWeatherByLocation = async (latitude, longitude, unitSystem) => {
     try {
-      const response = await axios.get(`https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=metric`);
+      const response = await axios.get(`https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=${unitSystem}`);
       setWeather(response.data);
     } catch (error) {
       console.error(error);
       setWeather(null);
     }
   };
+
+  const handleUnitSystemChange = () => {
+    setUnitSystem(unitSystem === 'metric' ? 'imperial' : 'metric');
+    if (city) {
+      fetchWeatherByCity(city, unitSystem === 'metric' ? 'imperial' : 'metric');
+    } else if (lat && lon) {
+      fetchWeatherByLocation(lat, lon, unitSystem === 'metric' ? 'imperial' : 'metric');
+    }
+  };
+
+  const temperatureUnit = unitSystem === 'metric' ? '°C' : '°F';
+  const windSpeedUnit = unitSystem === 'metric' ? 'm/s' : 'mph';
 
   const condition = weather ? weather.weather[0].main : '';
   const iconCode = weather ? weather.weather[0].icon : '';
 
   return (
     <div className={`weather-container ${timeOfDay} h-dvh w-full absolute top-0`}>
-      {/* <h1 className="text-3xl">Weather App</h1> */}
       <form
           onSubmit={handleSubmit}
           className='bg-white-100 p-1 rounded-full shadow-md my-8 mx-4 flex'
@@ -112,27 +124,35 @@ const Weather = () => {
         </button>
       </form>
 
+      <button onClick={handleUnitSystemChange} className='text-sm cursor-pointer'>
+        {unitSystem === 'metric' ? 'Switch to Imperial' : 'Switch to Metric'}
+      </button>
+
       {weather ? (
         <div className='m-8'>
           <h3 className='text-2xl font-medium'>{weather.name}</h3>
           <WeatherIcon condition={condition} iconCode={iconCode} />
-          <h2 className='text-3xl font-semibold'>{weather.main.temp}°C</h2>
+          <h2 className='text-3xl font-semibold'>{weather.main.temp}{temperatureUnit}</h2>
           <p>{weather.weather[0].description}</p>
           <DateTime weather={weather} setTimeOfDay={setTimeOfDay} />
-          {/* <p>{weather.weather[0].main}</p> */}
-          <div>
-            <i className='wi wi-thermometer'></i>
-            <p>Feels Like: {weather.main.feels_like}°C</p>
+          <div className='grid grid-cols-2 gap-4 mt-4'>
+            <div>
+              <i className='wi wi-thermometer'></i>
+              <p>Feels Like: {weather.main.feels_like}{temperatureUnit}</p>
+            </div>
+            <div>
+              <i className='wi wi-humidity'></i>
+              <p>Humidity: {weather.main.humidity}%</p>
+            </div>
+            <div>
+              <i className='wi wi-strong-wind'></i>
+              <p>Wind Speed: {weather.wind.speed} {windSpeedUnit}</p>
+            </div>
+            <div>
+              <i className='wi wi-raindrop'></i>
+              <p>Precipitation: {weather.rain && weather.rain['1h']} mm/hr</p>
+            </div>
           </div>
-          <div>
-            <i className='wi wi-humidity'></i>
-            <p>Humidity: {weather.main.humidity}%</p>
-          </div>
-          <div>
-            <i className='wi wi-strong-wind'></i>
-            <p>Wind Speed: {weather.wind.speed} m/s</p>
-          </div>
-
         </div>
       ) : lat || lon || city ? (
         <p>Loading...</p>
