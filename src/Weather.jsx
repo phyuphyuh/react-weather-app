@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import WeatherIcon from './WeatherIcon';
 
 const Weather = () => {
   const [city, setCity] = useState('');
@@ -10,18 +11,18 @@ const Weather = () => {
 
   const apiKey = import.meta.env.VITE_WEATHER_API_KEY;
 
-  // useEffect(() => {
-  //   navigator.geolocation.getCurrentPosition(
-  //     (position) => {
-  //       setLat(position.coords.latitude);
-  //       setLon(position.coords.longitude);
-  //     },
-  //     (error) => {
-  //       console.error('Error getting location:', error);
-  //       setCity('Bangkok');
-  //     }
-  //   );
-  // }, []);
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setLat(position.coords.latitude);
+        setLon(position.coords.longitude);
+      },
+      (error) => {
+        console.error('Error getting location:', error);
+        setCity('Bangkok');
+      }
+    );
+  }, []);
 
   useEffect(() => {
     if (lat && lon) {
@@ -92,6 +93,9 @@ const Weather = () => {
     }
   };
 
+  const condition = weather ? weather.weather[0].main : '';
+  const iconCode = weather ? weather.weather[0].icon : '';
+
   return (
     <div>
       <h1 className="text-3xl font-bold">Weather App</h1>
@@ -122,10 +126,8 @@ const Weather = () => {
         <div>
           <h2>Weather in {weather.name}</h2>
           <p>{date}</p>
-          <img
-            src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`}
-            alt={weather.weather[0].description}
-          />
+          <WeatherIcon condition={condition} iconCode={iconCode} />
+          <p>{weather.weather[0].main}</p>
           <p>{weather.weather[0].description}</p>
           <p>Temperature: {weather.main.temp}°C</p>
           <p>Humidity: {weather.main.humidity}%</p>
