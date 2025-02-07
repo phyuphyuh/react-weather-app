@@ -3,7 +3,7 @@ import React from "react";
 const weatherIcons = {
   "Clear": {
     day: "wi-day-sunny text-yellow-300",
-    night: "wi-stars"
+    night: "wi-stars text-amber-200"
   },
   "Clouds": {
     day: "wi-day-cloudy text-neutral-300",
@@ -14,24 +14,24 @@ const weatherIcons = {
     night: "wi-night-alt-thunderstorm text-gray-400"
   },
   "Drizzle": {
-    day: "wi-day-sprinkle",
-    night: "wi-night-alt-sprinkle"
+    day: "wi-day-sprinkle text-neutral-300",
+    night: "wi-night-alt-sprinkle text-gray-300"
   },
   "Rain": {
-    day: "wi-day-rain",
-    night: "wi-night-alt-rain"
+    day: "wi-day-rain text-neutral-300",
+    night: "wi-night-alt-rain text-gray-300"
   },
   "Snow": {
-    day: "wi-day-snow",
-    night: "wi-night-alt-snow"
+    day: "wi-day-snow text-sky-50",
+    night: "wi-night-alt-snow text-slate-50"
   },
   "Mist": {
-    day: "wi-day-cloudy-windy",
-    night: "wi-night-alt-cloudy-windy"
+    day: "wi-day-cloudy-windy text-blue-50",
+    night: "wi-night-alt-cloudy-windy text-blue-50"
   },
   "Smoke": {
-    day: "wi-smoke",
-    night: "wi-smoke"
+    day: "wi-smoke text-gray-400",
+    night: "wi-smoke text-gray-400"
   },
   "Haze": {
     day: "wi-day-haze",
@@ -68,7 +68,7 @@ const WeatherIcon = ({ condition, iconCode }) => {
   const iconClass = weatherIcons[condition] ? weatherIcons[condition][isDay ? "day" : "night"] : "win-na";
 
   return (
-    <i className={`wi ${iconClass} text-6xl mt-5 mb-2`}></i>
+    <i className={`wi ${iconClass} text-7xl mt-4 mb-3`}></i>
   );
 };
 

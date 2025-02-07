@@ -126,7 +126,7 @@ const Weather = () => {
     <div className={`weather-container ${timeOfDay} h-dvh w-full absolute top-0`}>
       <form
           onSubmit={handleSubmit}
-          className='bg-white-100 p-1 rounded-full shadow-md my-8 mx-4 flex'
+          className='bg-white-100 p-1 rounded-full shadow-md mt-8 mb-4 mx-4 flex'
       >
         <input
             type="text"
@@ -154,27 +154,27 @@ const Weather = () => {
       </button>
 
       {weather ? (
-        <div className='m-8 p-8 bg-white/10 backdrop-invert backdrop-opacity-5'>
-          <h3 className='text-3xl font-normal text-white mb-2'>{weather.name}</h3>
-          <h2 className='text-6xl font-light text-white'>{Math.round(weather.main.temp)}{temperatureUnit}</h2>
+        <div className='m-4 p-6 bg-white/20 backdrop-invert backdrop-opacity-5 rounded-xl'>
+          <h3 className='text-2xl font-normal text-white mb-2'>{weather.name}</h3>
+          <h2 className='text-5xl font-light text-white'>{Math.round(weather.main.temp)}{temperatureUnit}</h2>
           <WeatherIcon condition={condition} iconCode={iconCode} />
           <p className='text-lg font-medium text-sky-100 opacity-60'>{weather.weather[0].description}</p>
           <p className='text-lg font-medium text-sky-100'><span>H:{Math.round(weather.main.temp_max)}{temperatureUnit}</span><span className='ms-3'>L:{Math.round(weather.main.temp_min)}{temperatureUnit}</span></p>
           <DateTime weather={weather} setTimeOfDay={setTimeOfDay} />
-          <div className='grid grid-cols-2 gap-4 mt-4'>
-            <div>
+          <div className='grid grid-cols-2 gap-2 mt-4'>
+            <div className='p-4 bg-white/20 backdrop-invert backdrop-opacity-5 rounded-xl'>
               <i className='wi wi-thermometer'></i>
               <p>Feels Like: {weather.main.feels_like}{temperatureUnit}</p>
             </div>
-            <div>
+            <div className='p-4 bg-white/20 backdrop-invert backdrop-opacity-5 rounded-xl'>
               <i className='wi wi-humidity'></i>
               <p>Humidity: {weather.main.humidity}%</p>
             </div>
-            <div>
+            <div className='p-4 bg-white/20 backdrop-invert backdrop-opacity-5 rounded-xl'>
               <i className='wi wi-strong-wind'></i>
               <p>Wind Speed: {weather.wind.speed} {windSpeedUnit}</p>
             </div>
-            <div>
+            <div className='p-4 bg-white/20 backdrop-invert backdrop-opacity-5 rounded-xl'>
               <i className='wi wi-raindrop'></i>
               <p>Precipitation: {weather.rain && weather.rain['1h']} mm/hr</p>
             </div>
