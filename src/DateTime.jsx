@@ -43,7 +43,7 @@ const DateTime = ({ weather, setTimeOfDay }) => {
     return () => clearInterval(intervalId);
   }, [weather, setTimeOfDay]);
 
-  return <p className='my-3 text-md font-light text-white'>{date}</p>;
+  return <p className='mt-6 mb-9 md:my-3 text-md font-light text-white'>{date}</p>;
 };
 
 export default DateTime;
